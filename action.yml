@@ -1,4 +1,4 @@
-name: "ESLint+"
+name: "ESLint, but Better."
 author: "Andrew Ewing <drew@collaboratory.io>"
 description: "Check source code with ESLint."
 inputs:
