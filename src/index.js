@@ -3,26 +3,21 @@ import * as core from '@actions/core';
 import Octokit from '@octokit/rest';
 import * as github from '@actions/github';
 import { graphql } from '@octokit/graphql';
-import {
-  createCheck,
-  updateCheck,
-  getPullRequestInfo
-} from './github';
+import { createCheck, updateCheck, getPullRequestInfo } from './github';
 import * as CONST from './constants';
-import {
-  exitWithError,
-  isFileOk
-} from './utils';
+import { exitWithError, isFileOk } from './utils';
 import eslint from './eslint';
 
-const eslintConfigPath = core.getInput('eslint-config-path', { required: true });
-const eslintignorePath = core.getInput('eslintignore-path', { required: true });
-const repoToken = core.getInput('repo-token', { required: true });
-const customDirectory = core.getInput('custom-directory', { required: true });
+const eslintConfigPath = core.getInput('eslintrc', { required: true });
+const eslintignorePath = core.getInput('eslintignore', { required: true });
+const repoToken = core.getInput('token', { required: true });
+const customDirectory = core.getInput('directory', { required: true });
+const supportedExtensions = core
+  .getInput('extensions', { required: true })
+  .split(',')
+  .map((v) => v.trim());
 
-const {
-  GITHUB_WORKSPACE
-} = process.env;
+const { GITHUB_WORKSPACE } = process.env;
 
 async function run() {
   const octokit = new Octokit({
@@ -30,10 +25,8 @@ async function run() {
     userAgent: 'Branch Protection script',
     baseUrl: `https://api.${CONST.GITHUB_URL}`,
     log: {
-      debug: () => {
-      },
-      info: () => {
-      },
+      debug: () => { },
+      info: () => { },
       warn: console.warn,
       error: console.error
     },
@@ -59,10 +52,13 @@ async function run() {
   const files = prInfo.repository.pullRequest.files.nodes;
 
   const filesToLint = files
-    .filter((file) => CONST.EXTENSIONS_TO_LINT.includes(extname(file.path)) && isFileOk(file.path))
+    .filter(
+      (file) => supportedExtensions.includes(extname(file.path))
+        && isFileOk(file.path)
+    )
     .map((file) => file.path);
   if (filesToLint.length < 1) {
-    const extensionsString = CONST.EXTENSIONS_TO_LINT.join(', ');
+    const extensionsString = supportedExtensions.join(', ');
     console.warn(
       `No files with [${extensionsString}] extensions added or modified in this PR, nothing to lint...`
     );
@@ -112,5 +108,4 @@ async function run() {
   }
 }
 
-run()
-  .catch(exitWithError);
+run().catch(exitWithError);

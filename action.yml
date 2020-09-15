@@ -1,25 +1,27 @@
-name: 'ESLint checker'
-author: 'Valentin Hisari <hisari.valentin@gmail.com>'
-description: 'Check if changed files are properly formatted by the provided eslint rules.'
+name: "ESLint+"
+author: "Andrew Ewing <drew@collaboratory.io>"
+description: "Check source code with ESLint."
 inputs:
-  repo-token:
-    description: 'github security token'
+  token:
+    description: "github security token"
     required: true
-  custom-directory:
-    description: 'relative directory to node_modules'
+  directory:
+    description: "directory (relative to node_modules)"
     required: true
-  eslint-config-path:
-    description: 'relative path to eslint config file eg. .eslintrc'
+  eslintconfig:
+    description: "relative path to eslintconfig file eg. .eslintrc"
     required: true
-  eslintignore-path:
-    description: 'relative path to .eslintignore'
+  eslintignore:
+    description: "relative path to .eslintignore"
+    required: true
+  extensions:
+    description: "comma separated list of file extensions"
     required: true
 
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"
 
 branding:
-  icon: 'check-circle'
-  color: 'blue'
-
+  icon: "check-circle"
+  color: "blue"
